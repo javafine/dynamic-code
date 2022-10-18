@@ -5,6 +5,7 @@ import groovy.util.ConfigObject;
 import groovy.util.ConfigSlurper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -16,19 +17,25 @@ import java.util.Map;
 @Service("ConfigurationManager")
 public class ConfigurationManager {
 	static Logger logger = LoggerFactory.getLogger(ConfigurationManager.class);
-	public static String CONF = "conf";
+	public static String CONF = "release\\conf";
 	private static final Map<String, ConfigObject> MAP_CONFIG = new HashMap<String, ConfigObject>();
 
-
-//	private static ConfigrationManager instance = new ConfigrationManager();
-	private ConfigurationManager() {
-		logger.info("-------------------------ConfigrationManager.loadDefault 中文显示测试---------------------------");
-		loadDefault();
-		logger.info("--------------------------------------------------------------------------------------------");
-	}
-//	public static getInstance() {
-//		return instance;
+//	@Value("${dynamic.conf}")
+//	public void setCONF(String CONF) {
+//		if(CONF!=null&&!CONF.isEmpty()){
+//			ConfigurationManager.CONF = CONF;
+//		}
+//		logger.info("-------------------------ConfigrationManager.loadDefault---------------------------");
+//		loadDefault();
+//		logger.info("--------------------------------------------------------------------------------------------");
 //	}
+
+
+	public ConfigurationManager() {
+		logger.info("-------------------------ConfigrationManager.loadDefault---------------------------");
+		loadDefault();
+		logger.info("-----------------------------------------------------------------------------------");
+	}
 
 	public Object load(String path) {
 		if(path==null||path.isEmpty()) {
@@ -44,6 +51,7 @@ public class ConfigurationManager {
 	}
 
 	private String loadDefault() {
+
 		String pathDefault = CONF;
 		File file = new File(pathDefault);
 		if(!file.exists()) {
@@ -62,13 +70,14 @@ public class ConfigurationManager {
 				logger.info("ERROR:null");
 			}
 		}
+
 		return Arrays.toString(list);
 	}
 
 	public Object load(File file) {
 		Path pa = file.toPath();
 		String key = getConfigKey(pa);
-		ConfigObject config = null;
+		ConfigObject config;
 		try {
 			config = new ConfigSlurper().parse(file.toURI().toURL());
 		} catch (Exception e) {
@@ -100,7 +109,7 @@ public class ConfigurationManager {
 	
 	public static Object getConfig(ConfigObject co, String[] property) {
 		int length = property.length;
-		if(property!=null && length>0) {
+		if(length>0) {
 			for(int i = 0; i < length; i++) {
 				Object t = co.get(property[i]);
 				if(t == null) {
@@ -114,9 +123,6 @@ public class ConfigurationManager {
 				}
 			}
 		}
-		return null;
-		
-		
 //		StringBuilder sb = new StringBuilder();
 //		for(String p : property) {
 //			if(sb.length() != 0) {
@@ -127,10 +133,13 @@ public class ConfigurationManager {
 //		String pros = sb.toString();
 //		println configKey+" "+pros;
 //		return MAP_CONFIG.get(configKey)."${pros}"();
+		return null;
 	}
 
 	private String getConfigKey(Path path) {
-		return getConfigKey(path, 1);
+//		return getConfigKey(path, 1);
+		String t = path.getName(path.getNameCount() - 1).toString();
+		return t.substring(0, t.indexOf("."));
 	}
 
 	private String getConfigKey(Path path, int len) {
@@ -138,7 +147,7 @@ public class ConfigurationManager {
 		StringBuffer sb = new StringBuffer();
 		for (int i = len; i > 0 && i < pNameCount; i--) {
 			String t = path.getName(pNameCount - i).toString();
-			if (i == 1 && t.indexOf(".") > -1) {
+			if (i == 1 && t.contains(".")) {
 				sb.append(t.substring(0, t.indexOf(".")));
 			} else {
 				sb.append(t).append(".");

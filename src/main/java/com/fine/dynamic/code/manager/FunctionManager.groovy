@@ -2,20 +2,22 @@ package com.fine.dynamic.code.manager
 
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Scope
 import org.springframework.stereotype.Service
 
 @Service
 @Scope('singleton')
 class FunctionManager {
-	public static String CODE = "code"
-//	public static String CODE = "src\\main\\resources\\code"
-	public static String BAK = "src\\main\\resources\\bak"
-	public static String TMP = "src\\main\\resources\\tmp"
+	public static String CODE = "release\\code"
 
 	Logger logger = LoggerFactory.getLogger(FunctionManager.class)
 	GroovyScriptEngine groovyScriptEngine
 
+//	@Value('${dynamic.code}')
+//	void setCODE(String CODE) {
+//		FunctionManager.CODE = CODE
+//	}
 	private static FunctionManager instance = new FunctionManager()
 	private static final String FLAG_NULL_FUNCTION = "doCall=public java.lang.String com.cyou.cybaas.code.manager.FunctionManager.nullFunction"
 	/**
@@ -27,7 +29,6 @@ class FunctionManager {
 	 * @throws
 	 */
 	GroovyObject findObject(String name) {
-		GroovyObject groovyObject = null
 		if(groovyScriptEngine==null){
 			groovyScriptEngine = new GroovyScriptEngine([CODE] as String[])
 		}
@@ -131,13 +132,14 @@ class FunctionManager {
 	 * @throws MissingMethodException 不存在方法，也没有找到可加载的方法
 	 */
 	Object methodMissing(String mopName, def args){
-		String fileName = mopName.split("-")[0];
-		String functionName = mopName.split("-")[1];
+		String fileName = mopName.split("-")[0]
+		String functionName = mopName.split("-")[1]
 		if(loadFunction(fileName, functionName)){
 			logger.info("methodMissing and loadFunction, functionName:"+functionName)
 			return instance."${mopName}"(args[0], args[1])
 		} else {
 			logger.info("methodMissing : "+functionName)
+			return "methodMissing error"
 		}
 	}
 

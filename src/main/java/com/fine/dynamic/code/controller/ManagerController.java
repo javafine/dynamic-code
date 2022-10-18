@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Base64;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -107,8 +106,7 @@ public class ManagerController {
      */
     @RequestMapping(value = "/conf/get/{fileName}")
     public Object getConfig(@PathVariable(name = "fileName") String fileName) {
-        System.out.println(configurationManager.getAll());
-        return configurationManager.getConfig(fileName);
+        return ConfigurationManager.getConfig(fileName);
     }
 
 }
