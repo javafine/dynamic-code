@@ -16,12 +16,13 @@ jdk1.8、maven3.8.4、IntelliJ IDEA(Community Edition)、windows
 `java -jar .\dynamic-code-0.1.0.jar`
 或者：
 1. 在本工程目录下执行`mvn gplus:compile package`
-2. 将生成的`target/dynamic-code-0.1.0.jar`与`resources/code/sample.groovy`和`resources/conf/conf_sample.groovy`放到一个目录下执行`java -jar .\dynamic-code-0.1.0.jar`
+2. 将生成的`target/dynamic-code-0.1.0.jar`放到`release`目录下，与`release/code/sample.groovy`和`release/conf/conf_sample.groovy`在一个目录下执行`java -jar .\dynamic-code-0.1.0.jar`
 ## 测试
 1. 请求`curl --location --request GET 'localhost:8080/file/sample/function/hello?name=anna'`
-执行`code/sample.groovy`内的`hello`方法，返回`Hello : anna`。
-2. 修改`code/sample.groovy`的`hello`方法代码。
-3. 请求`curl --location --request GET 'localhost:8080/meta/reload/file/sample/function/confValue'`
-重新加载`code/sample.groovy`获得更新后的结果。
+执行`release/code/sample.groovy`内的`hello`方法，返回`Hello : anna`。
+2. 修改`release/code/sample.groovy`的`hello`方法代码。
+3. 请求`curl --location --request GET 'localhost:8080/meta/reload/file/sample/function/hello'`
+重新加载`release/code/sample.groovy`
+4. 再次请求`curl --location --request GET 'localhost:8080/file/sample/function/hello?name=anna'`，获得更新后的结果。
 ## 联系方式
 javafine@163.com
