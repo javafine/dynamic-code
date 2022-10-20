@@ -30,12 +30,12 @@ class ManagerControllerTest {
 
     @Test
     void execute() throws JsonProcessingException {
-        ResponseEntity<String> response = restTemplate.getForEntity("/file/sample/function/hello?name=aaa", String.class);
+        ResponseEntity<String> response = restTemplate.getForEntity("/file/sample/function/hello?name=Babe", String.class);
         ObjectMapper objectMapper = new ObjectMapper();
         Assertions.assertEquals(response.getStatusCode(), HttpStatus.OK);
         Assertions.assertEquals(
                 objectMapper.writeValueAsString(response.getBody()),
-                objectMapper.writeValueAsString("Hello : aaa")
+                objectMapper.writeValueAsString("Hello : Babe")
         );
     }
 
