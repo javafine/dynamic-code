@@ -3,16 +3,33 @@ package com.fine.dynamic.code.manager
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.system.ApplicationHome
 import org.springframework.context.annotation.Scope
 import org.springframework.stereotype.Service
 
 @Service
 @Scope('singleton')
 class FunctionManager {
-	public static String CODE = "release\\code"
+	public static String CODE_PATH_DEFAULT = "release\\code"
+	public static String CODE_DIR_DEFAULT = "code"
 
 	Logger logger = LoggerFactory.getLogger(FunctionManager.class)
 	GroovyScriptEngine groovyScriptEngine
+
+	private static String getCodefDir() {
+		ApplicationHome home = new ApplicationHome(FunctionManager.class)
+		if (home==null || home.getSource()==null){
+			//开发环境junit启动时
+			return CODE_PATH_DEFAULT
+		}
+		File execParentDir = home.getSource().getParentFile()
+		File file = new File(execParentDir, CODE_DIR_DEFAULT)
+		if (file.exists()) {
+			return file.getPath()
+		}
+		//开发环境main方法启动时
+		return CODE_PATH_DEFAULT
+	}
 
 //	@Value('${dynamic.code}')
 //	void setCODE(String CODE) {
@@ -30,7 +47,7 @@ class FunctionManager {
 	 */
 	GroovyObject findObject(String name) {
 		if(groovyScriptEngine==null){
-			groovyScriptEngine = new GroovyScriptEngine([CODE] as String[])
+			groovyScriptEngine = new GroovyScriptEngine([getCodefDir()] as String[])
 		}
 		return (GroovyObject) groovyScriptEngine.loadScriptByName(name).newInstance()
 	} 
